@@ -3,10 +3,13 @@
 import { createContext, useContext } from "react"
 
 export class AudioManager {
-  mediaElement: HTMLAudioElement
+  mediaElement: HTMLAudioElement | null = null
   audioObjectURL: string | null = null
 
   constructor() {
+    if (typeof window === 'undefined') {
+      return
+    }
     const mediaElement = new Audio()
     this.mediaElement = mediaElement
   }
@@ -19,6 +22,9 @@ export class AudioManager {
   }
 
   async loadAudio(file: Blob) {
+    if (!this.mediaElement) {
+      return
+    }
     await this.unloadCurrentAudio()
 
     const { mediaElement } = this
@@ -29,19 +35,19 @@ export class AudioManager {
   }
 
   play() {
-    if (this.mediaElement.ended) {
+    if (this.mediaElement?.ended) {
       this.mediaElement.currentTime = 0
     }
-    this.mediaElement.play()
+    this.mediaElement?.play()
   }
 
   pause() {
-    this.mediaElement.pause()
+    this.mediaElement?.pause()
   }
 
   destroy() {
     this.unloadCurrentAudio()
-    this.mediaElement.pause()
+    this.mediaElement?.pause()
   }
 }
 
